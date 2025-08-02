@@ -1,146 +1,129 @@
 import 'package:flutter/material.dart';
 
-class ReviewModel {
+class Review {
   final String id;
-  final String bookingId;
-  final String userId;
   final String providerId;
-  final String? userName;
-  final String? userAvatar;
-  final double rating;
-  final String? comment;
-  final List<String>? tags;
-  final Map<String, double>? categoryRatings;
-  final bool isAnonymous;
-  final bool isVerified;
+  final String userId;
+  final String userName;
+  final String? userProfileImage;
+  final int rating;
+  final String comment;
+  final Map<String, int> aspectRatings;
+  final int helpfulCount;
+  final bool isHelpful;
+  final bool isReported;
+  final String? providerResponse;
+  final DateTime? providerResponseDate;
+  final List<String>? providerResponseAttachments;
   final DateTime createdAt;
-  final DateTime? updatedAt;
-  final String? reply;
-  final DateTime? replyDate;
-  final String? replyBy;
+  final DateTime updatedAt;
 
-  ReviewModel({
+  Review({
     required this.id,
-    required this.bookingId,
-    required this.userId,
     required this.providerId,
-    this.userName,
-    this.userAvatar,
+    required this.userId,
+    required this.userName,
+    this.userProfileImage,
     required this.rating,
-    this.comment,
-    this.tags,
-    this.categoryRatings,
-    this.isAnonymous = false,
-    this.isVerified = false,
+    required this.comment,
+    required this.aspectRatings,
+    required this.helpfulCount,
+    required this.isHelpful,
+    required this.isReported,
+    this.providerResponse,
+    this.providerResponseDate,
+    this.providerResponseAttachments,
     required this.createdAt,
-    this.updatedAt,
-    this.reply,
-    this.replyDate,
-    this.replyBy,
+    required this.updatedAt,
   });
 
-  factory ReviewModel.fromJson(Map<String, dynamic> json) {
-    return ReviewModel(
+  factory Review.fromJson(Map<String, dynamic> json) {
+    return Review(
       id: json['id'] as String,
-      bookingId: json['booking_id'] as String,
-      userId: json['user_id'] as String,
       providerId: json['provider_id'] as String,
-      userName: json['user_name'] as String?,
-      userAvatar: json['user_avatar'] as String?,
-      rating: (json['rating'] as num).toDouble(),
-      comment: json['comment'] as String?,
-      tags: json['tags'] != null
-          ? List<String>.from(json['tags'] as List)
+      userId: json['user_id'] as String,
+      userName: json['user_name'] as String,
+      userProfileImage: json['user_profile_image'] as String?,
+      rating: json['rating'] as int,
+      comment: json['comment'] as String,
+      aspectRatings: Map<String, int>.from(json['aspect_ratings'] ?? {}),
+      helpfulCount: json['helpful_count'] as int? ?? 0,
+      isHelpful: json['is_helpful'] as bool? ?? false,
+      isReported: json['is_reported'] as bool? ?? false,
+      providerResponse: json['provider_response'] as String?,
+      providerResponseDate: json['provider_response_date'] != null
+          ? DateTime.parse(json['provider_response_date'] as String)
           : null,
-      categoryRatings: json['category_ratings'] != null
-          ? Map<String, double>.from(
-              (json['category_ratings'] as Map<String, dynamic>).map(
-                (key, value) => MapEntry(key, (value as num).toDouble()),
-              ),
-            )
+      providerResponseAttachments: json['provider_response_attachments'] != null
+          ? List<String>.from(json['provider_response_attachments'] as List)
           : null,
-      isAnonymous: json['is_anonymous'] as bool? ?? false,
-      isVerified: json['is_verified'] as bool? ?? false,
       createdAt: DateTime.parse(json['created_at'] as String),
-      updatedAt: json['updated_at'] != null
-          ? DateTime.parse(json['updated_at'] as String)
-          : null,
-      reply: json['reply'] as String?,
-      replyDate: json['reply_date'] != null
-          ? DateTime.parse(json['reply_date'] as String)
-          : null,
-      replyBy: json['reply_by'] as String?,
+      updatedAt: DateTime.parse(json['updated_at'] as String),
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'booking_id': bookingId,
-      'user_id': userId,
       'provider_id': providerId,
+      'user_id': userId,
       'user_name': userName,
-      'user_avatar': userAvatar,
+      'user_profile_image': userProfileImage,
       'rating': rating,
       'comment': comment,
-      'tags': tags,
-      'category_ratings': categoryRatings,
-      'is_anonymous': isVerified,
-      'is_verified': isVerified,
+      'aspect_ratings': aspectRatings,
+      'helpful_count': helpfulCount,
+      'is_helpful': isHelpful,
+      'is_reported': isReported,
+      'provider_response': providerResponse,
+      'provider_response_date': providerResponseDate?.toIso8601String(),
+      'provider_response_attachments': providerResponseAttachments,
       'created_at': createdAt.toIso8601String(),
-      'updated_at': updatedAt?.toIso8601String(),
-      'reply': reply,
-      'reply_date': replyDate?.toIso8601String(),
-      'reply_by': replyBy,
+      'updated_at': updatedAt.toIso8601String(),
     };
   }
 
-  ReviewModel copyWith({
+  Review copyWith({
     String? id,
-    String? bookingId,
-    String? userId,
     String? providerId,
+    String? userId,
     String? userName,
-    String? userAvatar,
-    double? rating,
+    String? userProfileImage,
+    int? rating,
     String? comment,
-    List<String>? tags,
-    Map<String, double>? categoryRatings,
-    bool? isAnonymous,
-    bool? isVerified,
+    Map<String, int>? aspectRatings,
+    int? helpfulCount,
+    bool? isHelpful,
+    bool? isReported,
+    String? providerResponse,
+    DateTime? providerResponseDate,
+    List<String>? providerResponseAttachments,
     DateTime? createdAt,
     DateTime? updatedAt,
-    String? reply,
-    DateTime? replyDate,
-    String? replyBy,
   }) {
-    return ReviewModel(
+    return Review(
       id: id ?? this.id,
-      bookingId: bookingId ?? this.bookingId,
-      userId: userId ?? this.userId,
       providerId: providerId ?? this.providerId,
+      userId: userId ?? this.userId,
       userName: userName ?? this.userName,
-      userAvatar: userAvatar ?? this.userAvatar,
+      userProfileImage: userProfileImage ?? this.userProfileImage,
       rating: rating ?? this.rating,
       comment: comment ?? this.comment,
-      tags: tags ?? this.tags,
-      categoryRatings: categoryRatings ?? this.categoryRatings,
-      isAnonymous: isAnonymous ?? this.isAnonymous,
-      isVerified: isVerified ?? this.isVerified,
+      aspectRatings: aspectRatings ?? this.aspectRatings,
+      helpfulCount: helpfulCount ?? this.helpfulCount,
+      isHelpful: isHelpful ?? this.isHelpful,
+      isReported: isReported ?? this.isReported,
+      providerResponse: providerResponse ?? this.providerResponse,
+      providerResponseDate: providerResponseDate ?? this.providerResponseDate,
+      providerResponseAttachments:
+          providerResponseAttachments ?? this.providerResponseAttachments,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
-      reply: reply ?? this.reply,
-      replyDate: replyDate ?? this.replyDate,
-      replyBy: replyBy ?? this.replyBy,
     );
   }
 
-  String get displayName {
-    if (isAnonymous) {
-      return 'Anonymous User';
-    }
-    return userName ?? 'User';
-  }
+  bool get hasProviderResponse =>
+      providerResponse != null && providerResponse!.isNotEmpty;
 
   String get timeAgo {
     final now = DateTime.now();
@@ -157,39 +140,10 @@ class ReviewModel {
     }
   }
 
-  bool get hasReply => reply != null && reply!.isNotEmpty;
-
-  double get averageCategoryRating {
-    if (categoryRatings == null || categoryRatings!.isEmpty) {
-      return rating;
-    }
-
-    final total = categoryRatings!.values.reduce((a, b) => a + b);
-    return total / categoryRatings!.length;
-  }
-
-  List<String> get categoryNames {
-    return categoryRatings?.keys.toList() ?? [];
-  }
-
-  bool get isRecent {
-    final now = DateTime.now();
-    final difference = now.difference(createdAt);
-    return difference.inDays < 30;
-  }
-
   String get ratingText {
-    if (rating >= 4.5) return 'Excellent';
-    if (rating >= 4.0) return 'Very Good';
-    if (rating >= 3.5) return 'Good';
-    if (rating >= 3.0) return 'Average';
-    if (rating >= 2.0) return 'Below Average';
+    if (rating >= 4) return 'Excellent';
+    if (rating >= 3) return 'Good';
+    if (rating >= 2) return 'Average';
     return 'Poor';
-  }
-
-  Color get ratingColor {
-    if (rating >= 4.0) return Colors.green;
-    if (rating >= 3.0) return Colors.orange;
-    return Colors.red;
   }
 }

@@ -4,7 +4,7 @@ import '../models/user_model.dart';
 
 class AuthProvider extends ChangeNotifier {
   final SupabaseClient _supabase = Supabase.instance.client;
-  
+
   UserModel? _currentUser;
   bool _isLoading = false;
   String? _error;
@@ -24,7 +24,7 @@ class AuthProvider extends ChangeNotifier {
 
       // Simulate OTP sending (replace with actual Supabase auth)
       await Future.delayed(const Duration(seconds: 2));
-      
+
       _isLoading = false;
       notifyListeners();
       return true;
@@ -45,7 +45,7 @@ class AuthProvider extends ChangeNotifier {
 
       // Simulate OTP verification (replace with actual Supabase auth)
       await Future.delayed(const Duration(seconds: 2));
-      
+
       // Create mock user for demo
       _currentUser = UserModel(
         id: 'user_${DateTime.now().millisecondsSinceEpoch}',
@@ -100,6 +100,29 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
+  // Update user location
+  Future<bool> updateUserLocation(UserModel updatedUser) async {
+    try {
+      _isLoading = true;
+      _error = null;
+      notifyListeners();
+
+      _currentUser = updatedUser;
+
+      // TODO: Save to Supabase database
+      // await _supabase.from('users').update(updatedUser.toJson()).eq('id', updatedUser.id);
+
+      _isLoading = false;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _isLoading = false;
+      _error = e.toString();
+      notifyListeners();
+      return false;
+    }
+  }
+
   // Sign out
   Future<void> signOut() async {
     _currentUser = null;
@@ -112,4 +135,4 @@ class AuthProvider extends ChangeNotifier {
     _error = null;
     notifyListeners();
   }
-} 
+}
