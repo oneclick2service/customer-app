@@ -12,15 +12,18 @@ import 'providers/booking_provider.dart';
 import 'providers/location_provider.dart';
 
 // Import screens
-import 'screens/welcome_screen.dart';
+import 'screens/splash_screen.dart';
+import 'screens/test_screen.dart';
+import 'screens/account_type_selection_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Initialize Supabase
   await Supabase.initialize(
-    url: 'https://your-project.supabase.co',
-    anonKey: 'your-anon-key',
+    url: 'https://hrjoizitmcjjeawimaqs.supabase.co',
+    anonKey:
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhyam9peml0bWNqamVhd2ltYXFzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQxNDcxOTgsImV4cCI6MjA2OTcyMzE5OH0.lWt6K2Dm6pIbTFklfUGpABwenI51ID5yUw2AEH0foyo',
   );
 
   runApp(const OneClickApp());
@@ -111,7 +114,7 @@ class OneClickApp extends StatelessWidget {
             ),
           ),
         ),
-        home: const WelcomeScreen(),
+        home: const SplashScreen(),
       ),
     );
   }

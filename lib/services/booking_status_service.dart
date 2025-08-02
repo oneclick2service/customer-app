@@ -148,7 +148,7 @@ class BookingStatusService {
 
       // Add any additional data
       if (additionalData != null) {
-        updateData.addAll(additionalData);
+        updateData.addAll(Map<String, String>.from(additionalData));
       }
 
       await _supabase.from('bookings').update(updateData).eq('id', bookingId);

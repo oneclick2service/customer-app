@@ -4,6 +4,7 @@ import '../constants/app_constants.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/custom_text_field.dart';
+import 'otp_verification_screen.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
@@ -13,253 +14,327 @@ class WelcomeScreen extends StatefulWidget {
 }
 
 class _WelcomeScreenState extends State<WelcomeScreen> {
-  final _formKey = GlobalKey<FormState>();
-  final _phoneController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
   bool _isLoading = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _initializeAuth();
-  }
-
-  Future<void> _initializeAuth() async {
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    // Remove Firebase initialization for now
-  }
-
-  Future<void> _sendOtp() async {
-    if (!_formKey.currentState!.validate()) return;
-
-    setState(() {
-      _isLoading = true;
-    });
-
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    final phoneNumber = _phoneController.text.trim();
-    
-    final success = await authProvider.sendOtp(phoneNumber);
-    
-    if (mounted) {
-      setState(() {
-        _isLoading = false;
-      });
-
-      if (success) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('OTP sent successfully! Check your phone.'),
-            backgroundColor: AppConstants.successColor,
-          ),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(authProvider.error ?? 'Failed to send OTP'),
-            backgroundColor: AppConstants.errorColor,
-          ),
-        );
-      }
-    }
-  }
+  String? _error;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
-          gradient: AppConstants.primaryGradient,
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [AppConstants.primaryColor, Color(0xFF1976D2)],
+          ),
         ),
         child: SafeArea(
-          child: Column(
-            children: [
-              // App Header
-              Container(
-                padding: const EdgeInsets.all(AppConstants.paddingLarge),
-                child: Column(
-                  children: [
-                    // App Icon
-                    Container(
-                      width: 80,
-                      height: 80,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(AppConstants.borderRadiusLarge),
-                        boxShadow: AppConstants.elevatedShadow,
-                      ),
-                      child: const Icon(
-                        Icons.touch_app,
-                        size: 40,
-                        color: AppConstants.primaryColor,
-                      ),
-                    ),
-                    const SizedBox(height: AppConstants.marginMedium),
-                    
-                    // App Title
-                    Text(
-                      AppConstants.appName,
-                      style: AppConstants.headingStyle.copyWith(
-                        color: Colors.white,
-                        fontSize: 32,
-                      ),
-                    ),
-                    const SizedBox(height: AppConstants.marginSmall),
-                    
-                    // App Description
-                    Text(
-                      AppConstants.appDescription,
-                      style: AppConstants.captionStyle.copyWith(
-                        color: Colors.white.withOpacity(0.9),
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
-              ),
+          child: Padding(
+            padding: const EdgeInsets.all(AppConstants.paddingLarge),
+            child: Column(
+              children: [
+                const Spacer(),
 
-              // Features Section
-              Expanded(
-                child: Container(
+                // Welcome Header
+                Container(
                   padding: const EdgeInsets.all(AppConstants.paddingLarge),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(
+                      AppConstants.borderRadiusLarge,
+                    ),
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.2),
+                      width: 1,
+                    ),
+                  ),
                   child: Column(
                     children: [
-                      // Feature Cards
-                      Expanded(
-                        child: GridView.count(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: AppConstants.marginMedium,
-                          mainAxisSpacing: AppConstants.marginMedium,
-                          children: [
-                            _buildFeatureCard(
-                              icon: Icons.flash_on,
-                              title: 'Instant Booking',
-                              description: 'Book services instantly',
-                              color: AppConstants.secondaryColor,
-                            ),
-                            _buildFeatureCard(
-                              icon: Icons.location_on,
-                              title: 'Real-time Tracking',
-                              description: 'Track service providers',
-                              color: AppConstants.accentColor,
-                            ),
-                            _buildFeatureCard(
-                              icon: Icons.payment,
-                              title: 'Transparent Pricing',
-                              description: 'No hidden charges',
-                              color: AppConstants.successColor,
-                            ),
-                            _buildFeatureCard(
-                              icon: Icons.verified,
-                              title: 'Verified Providers',
-                              description: 'Trusted professionals',
-                              color: AppConstants.warningColor,
-                            ),
-                          ],
+                      Container(
+                        width: 100,
+                        height: 100,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(
+                            AppConstants.borderRadiusLarge,
+                          ),
+                          boxShadow: AppConstants.elevatedShadow,
+                        ),
+                        child: const Icon(
+                          Icons.home_repair_service,
+                          size: 50,
+                          color: AppConstants.primaryColor,
                         ),
                       ),
 
-                      // Phone Number Form
-                      Container(
-                        padding: const EdgeInsets.all(AppConstants.paddingLarge),
-                        decoration: BoxDecoration(
+                      const SizedBox(height: AppConstants.paddingLarge),
+
+                      Text(
+                        'Welcome to One Click 2 Service',
+                        style: AppConstants.headingStyle.copyWith(
                           color: Colors.white,
-                          borderRadius: BorderRadius.circular(AppConstants.borderRadiusLarge),
-                          boxShadow: AppConstants.elevatedShadow,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
                         ),
-                        child: Form(
-                          key: _formKey,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              Text(
-                                'Enter your phone number',
-                                style: AppConstants.subheadingStyle,
-                                textAlign: TextAlign.center,
-                              ),
-                              const SizedBox(height: AppConstants.marginMedium),
-                              
-                              CustomTextField(
-                                controller: _phoneController,
-                                hintText: 'Phone Number',
-                                prefixIcon: const Icon(Icons.phone),
-                                keyboardType: TextInputType.phone,
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Please enter your phone number';
-                                  }
-                                  if (value.length < 10) {
-                                    return 'Please enter a valid phone number';
-                                  }
-                                  return null;
-                                },
-                              ),
-                              const SizedBox(height: AppConstants.marginMedium),
-                              
-                              CustomButton(
-                                text: 'Continue',
-                                onPressed: _isLoading ? null : _sendOtp,
-                                isLoading: _isLoading,
-                              ),
-                            ],
+                        textAlign: TextAlign.center,
+                      ),
+
+                      const SizedBox(height: AppConstants.paddingMedium),
+
+                      Text(
+                        'Get reliable service providers at your doorstep in Vijayawada',
+                        style: AppConstants.bodyStyle.copyWith(
+                          color: Colors.white.withValues(alpha: 0.9),
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: AppConstants.paddingXLarge),
+
+                // Features List
+                Container(
+                  padding: const EdgeInsets.all(AppConstants.paddingLarge),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(
+                      AppConstants.borderRadiusLarge,
+                    ),
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.2),
+                      width: 1,
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Why Choose Us?',
+                        style: AppConstants.subheadingStyle.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+
+                      const SizedBox(height: AppConstants.paddingMedium),
+
+                      _buildFeatureItem(
+                        icon: Icons.verified,
+                        title: 'Verified Providers',
+                        subtitle: 'Background-checked service professionals',
+                      ),
+
+                      _buildFeatureItem(
+                        icon: Icons.schedule,
+                        title: 'Instant Booking',
+                        subtitle: 'Book services in just one click',
+                      ),
+
+                      _buildFeatureItem(
+                        icon: Icons.location_on,
+                        title: 'Real-time Tracking',
+                        subtitle: 'Track your service provider live',
+                      ),
+
+                      _buildFeatureItem(
+                        icon: Icons.payment,
+                        title: 'Transparent Pricing',
+                        subtitle: 'No hidden charges, clear pricing',
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: AppConstants.paddingXLarge),
+
+                // Phone Number Input
+                Container(
+                  padding: const EdgeInsets.all(AppConstants.paddingLarge),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(
+                      AppConstants.borderRadiusLarge,
+                    ),
+                    boxShadow: AppConstants.elevatedShadow,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Get Started',
+                        style: AppConstants.subheadingStyle.copyWith(
+                          color: AppConstants.textPrimaryColor,
+                        ),
+                      ),
+
+                      const SizedBox(height: AppConstants.paddingMedium),
+
+                      // Error Message
+                      if (_error != null)
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(
+                            AppConstants.paddingSmall,
                           ),
+                          margin: const EdgeInsets.only(
+                            bottom: AppConstants.paddingMedium,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.red.shade50,
+                            borderRadius: BorderRadius.circular(
+                              AppConstants.borderRadiusSmall,
+                            ),
+                            border: Border.all(color: Colors.red.shade200),
+                          ),
+                          child: Text(
+                            _error!,
+                            style: TextStyle(
+                              color: Colors.red.shade700,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+
+                      CustomTextField(
+                        controller: _phoneController,
+                        hintText: 'Enter your phone number',
+                        prefixIcon: const Icon(Icons.phone),
+                        keyboardType: TextInputType.phone,
+                      ),
+
+                      const SizedBox(height: AppConstants.paddingMedium),
+
+                      Text(
+                        'We\'ll send you a verification code',
+                        style: AppConstants.captionStyle.copyWith(
+                          color: AppConstants.textSecondaryColor,
+                        ),
+                      ),
+
+                      const SizedBox(height: AppConstants.paddingLarge),
+
+                      SizedBox(
+                        width: double.infinity,
+                        child: CustomButton(
+                          onPressed: _isLoading ? null : _sendOtp,
+                          text: _isLoading ? 'Sending...' : 'Continue',
                         ),
                       ),
                     ],
                   ),
                 ),
-              ),
-            ],
+
+                const Spacer(),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildFeatureCard({
+  Widget _buildFeatureItem({
     required IconData icon,
     required String title,
-    required String description,
-    required Color color,
+    required String subtitle,
   }) {
-    return Container(
-      padding: const EdgeInsets.all(AppConstants.paddingMedium),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(AppConstants.borderRadiusMedium),
-        border: Border.all(
-          color: Colors.white.withOpacity(0.2),
-          width: 1,
-        ),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppConstants.paddingMedium),
+      child: Row(
         children: [
-          Icon(
-            icon,
-            size: 32,
-            color: color,
-          ),
-          const SizedBox(height: AppConstants.marginSmall),
-          Text(
-            title,
-            style: AppConstants.subheadingStyle.copyWith(
+          Container(
+            padding: const EdgeInsets.all(AppConstants.paddingSmall),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.2),
+              borderRadius: BorderRadius.circular(
+                AppConstants.borderRadiusSmall,
+              ),
+            ),
+            child: Icon(
+              icon,
               color: Colors.white,
-              fontSize: 14,
+              size: 20,
             ),
-            textAlign: TextAlign.center,
           ),
-          const SizedBox(height: AppConstants.marginSmall),
-          Text(
-            description,
-            style: AppConstants.captionStyle.copyWith(
-              color: Colors.white.withOpacity(0.8),
-              fontSize: 12,
+          const SizedBox(width: AppConstants.paddingMedium),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: AppConstants.bodyStyle.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                Text(
+                  subtitle,
+                  style: AppConstants.captionStyle.copyWith(
+                    color: Colors.white.withValues(alpha: 0.8),
+                  ),
+                ),
+              ],
             ),
-            textAlign: TextAlign.center,
           ),
         ],
       ),
     );
+  }
+
+  Future<void> _sendOtp() async {
+    final phoneNumber = _phoneController.text.trim();
+    
+    if (phoneNumber.isEmpty) {
+      setState(() {
+        _error = 'Please enter your phone number';
+      });
+      return;
+    }
+
+    if (phoneNumber.length < 10) {
+      setState(() {
+        _error = 'Please enter a valid phone number';
+      });
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+
+    try {
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final success = await authProvider.sendOtp(phoneNumber);
+
+      if (success && mounted) {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => OtpVerificationScreen(phoneNumber: phoneNumber),
+          ),
+        );
+      } else if (mounted) {
+        setState(() {
+          _error = authProvider.error ?? 'Failed to send OTP';
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _error = e.toString();
+        });
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
   }
 
   @override

@@ -11,20 +11,33 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:oneclick2service/main.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
+  testWidgets('One Click 2 Service app smoke test', (
+    WidgetTester tester,
+  ) async {
     // Build our app and trigger a frame.
     await tester.pumpWidget(const OneClickApp());
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    // Verify that our app title is displayed.
+    expect(find.text('One Click 2 Service - Test'), findsOneWidget);
+    expect(find.text('One Click 2 Service'), findsOneWidget);
+    expect(
+      find.text('Your trusted service provider in Vijayawada'),
+      findsOneWidget,
+    );
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    // Verify that test form elements are present.
+    expect(find.text('Test Features'), findsOneWidget);
+    expect(find.text('Enter Phone Number'), findsOneWidget);
+    expect(find.text('Enter OTP'), findsOneWidget);
+    expect(find.text('Test App'), findsOneWidget);
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // Verify that working features list is displayed.
+    expect(find.text('✅ Working Features:'), findsOneWidget);
+    expect(find.text('Location Picker with Map'), findsOneWidget);
+    expect(find.text('Payment Integration (Razorpay + UPI)'), findsOneWidget);
+    expect(find.text('Real-time Chat System'), findsOneWidget);
+    expect(find.text('Booking Management'), findsOneWidget);
+    expect(find.text('Profile Management'), findsOneWidget);
+    expect(find.text('Service Provider Verification'), findsOneWidget);
   });
 }

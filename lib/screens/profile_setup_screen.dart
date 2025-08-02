@@ -8,7 +8,12 @@ import 'home_screen.dart';
 import 'location_picker_screen.dart';
 
 class ProfileSetupScreen extends StatefulWidget {
-  const ProfileSetupScreen({super.key});
+  final bool isCorporate;
+  
+  const ProfileSetupScreen({
+    super.key,
+    this.isCorporate = false,
+  });
 
   @override
   State<ProfileSetupScreen> createState() => _ProfileSetupScreenState();
@@ -31,6 +36,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
   @override
   void initState() {
     super.initState();
+    _isCorporate = widget.isCorporate;
     _loadUserData();
   }
 

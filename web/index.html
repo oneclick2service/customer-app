@@ -18,7 +18,7 @@
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
+  <meta name="description" content="One Click 2 Service - Your trusted service provider in Vijayawada">
 
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
@@ -29,8 +29,22 @@
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png"/>
 
-  <title>oneclick2service</title>
+  <title>One Click 2 Service</title>
   <link rel="manifest" href="manifest.json">
+  
+  <!-- Suppress Intl deprecation warnings -->
+  <script>
+    // Suppress Intl.v8BreakIterator deprecation warnings
+    if (typeof console !== 'undefined' && console.warn) {
+      const originalWarn = console.warn;
+      console.warn = function(...args) {
+        if (args[0] && typeof args[0] === 'string' && args[0].includes('Intl.v8BreakIterator')) {
+          return; // Suppress this specific warning
+        }
+        originalWarn.apply(console, args);
+      };
+    }
+  </script>
 </head>
 <body>
   <script src="flutter_bootstrap.js" async></script>

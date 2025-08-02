@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../constants/app_constants.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/custom_button.dart';
+import 'account_type_selection_screen.dart';
 
 class OtpVerificationScreen extends StatefulWidget {
   final String phoneNumber;
@@ -73,7 +74,14 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
       });
 
       if (success) {
-        Navigator.pushReplacementNamed(context, '/home');
+        // Save session and navigate to account type selection
+        await authProvider.saveSession();
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const AccountTypeSelectionScreen(),
+          ),
+        );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

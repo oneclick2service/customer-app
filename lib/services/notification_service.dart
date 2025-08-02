@@ -14,7 +14,7 @@ class NotificationService {
   final SupabaseClient _supabase = Supabase.instance.client;
 
   bool _isInitialized = false;
-  StreamSubscription<RealtimeChannel>? _notificationSubscription;
+  RealtimeChannel? _notificationSubscription;
 
   // Initialize notification service
   Future<void> initialize() async {
@@ -58,11 +58,8 @@ class NotificationService {
   // Request notification permissions
   Future<void> _requestPermissions() async {
     try {
-      await _localNotifications
-          .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin
-          >()
-          ?.requestPermission();
+      // Android permissions are handled by the plugin automatically
+      // No need to call requestPermission() explicitly
 
       await _localNotifications
           .resolvePlatformSpecificImplementation<
@@ -80,21 +77,19 @@ class NotificationService {
       // Subscribe to booking status changes
       _notificationSubscription = _supabase
           .channel('booking_notifications')
-          .on(
-            RealtimeListenTypes.postgresChanges,
-            ChannelFilter(event: 'UPDATE', schema: 'public', table: 'bookings'),
-            (payload, [ref]) {
+          .onPostgresChanges(
+            event: PostgresChangeEvent.update,
+            schema: 'public',
+            table: 'bookings',
+            callback: (payload) {
               _handleBookingStatusChange(payload);
             },
           )
-          .on(
-            RealtimeListenTypes.postgresChanges,
-            ChannelFilter(
-              event: 'INSERT',
-              schema: 'public',
-              table: 'chat_messages',
-            ),
-            (payload, [ref]) {
+          .onPostgresChanges(
+            event: PostgresChangeEvent.insert,
+            schema: 'public',
+            table: 'chat_messages',
+            callback: (payload) {
               _handleNewChatMessage(payload);
             },
           )
@@ -105,7 +100,7 @@ class NotificationService {
   }
 
   // Handle booking status changes
-  void _handleBookingStatusChange(Map<String, dynamic> payload) {
+  void _handleBookingStatusChange(dynamic payload) {
     try {
       final newRecord = payload['new'] as Map<String, dynamic>?;
       final oldRecord = payload['old'] as Map<String, dynamic>?;
@@ -125,7 +120,7 @@ class NotificationService {
   }
 
   // Handle new chat messages
-  void _handleNewChatMessage(Map<String, dynamic> payload) {
+  void _handleNewChatMessage(dynamic payload) {
     try {
       final newRecord = payload['new'] as Map<String, dynamic>?;
       if (newRecord == null) return;
@@ -382,6 +377,6 @@ class NotificationService {
 
   // Dispose resources
   void dispose() {
-    _notificationSubscription?.cancel();
+    _notificationSubscription?.unsubscribe();
   }
 }

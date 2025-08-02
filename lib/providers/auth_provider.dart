@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/user_model.dart';
+import '../services/session_service.dart';
+import '../services/supabase_service.dart';
 
 class AuthProvider extends ChangeNotifier {
   final SupabaseClient _supabase = Supabase.instance.client;
+  final SessionService _sessionService = SessionService();
+  final SupabaseService _supabaseService = SupabaseService();
 
   UserModel? _currentUser;
   bool _isLoading = false;
@@ -134,5 +138,89 @@ class AuthProvider extends ChangeNotifier {
   void clearError() {
     _error = null;
     notifyListeners();
+  }
+
+  // Session Management
+  Future<bool> checkAutoLogin() async {
+    try {
+      _isLoading = true;
+      notifyListeners();
+
+      final isLoggedIn = await _sessionService.isLoggedIn();
+      if (isLoggedIn) {
+        final user = await _sessionService.getCurrentUser();
+        if (user != null) {
+          _currentUser = user;
+          _isLoading = false;
+          notifyListeners();
+          return true;
+        }
+      }
+
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    } catch (e) {
+      _isLoading = false;
+      _error = e.toString();
+      notifyListeners();
+      return false;
+    }
+  }
+
+  Future<void> saveSession() async {
+    if (_currentUser != null) {
+      await _sessionService.saveSession(_currentUser!, 'session_token_${DateTime.now().millisecondsSinceEpoch}');
+    }
+  }
+
+  Future<void> clearSession() async {
+    await _sessionService.clearSession();
+    _currentUser = null;
+    _error = null;
+    notifyListeners();
+  }
+
+  Future<void> setAutoLogin(bool enabled) async {
+    await _sessionService.setAutoLogin(enabled);
+  }
+
+  Future<bool> isAutoLoginEnabled() async {
+    return await _sessionService.isAutoLoginEnabled();
+  }
+
+  // Supabase Integration
+  Future<bool> saveUserToSupabase() async {
+    if (_currentUser != null) {
+      try {
+        final savedUser = await _supabaseService.createUser(_currentUser!);
+        if (savedUser != null) {
+          _currentUser = savedUser;
+          notifyListeners();
+          return true;
+        }
+      } catch (e) {
+        _error = e.toString();
+        notifyListeners();
+      }
+    }
+    return false;
+  }
+
+  Future<bool> updateUserInSupabase() async {
+    if (_currentUser != null) {
+      try {
+        final success = await _supabaseService.updateUser(_currentUser!);
+        if (success) {
+          await _sessionService.updateUserInSession(_currentUser!);
+          notifyListeners();
+          return true;
+        }
+      } catch (e) {
+        _error = e.toString();
+        notifyListeners();
+      }
+    }
+    return false;
   }
 }
