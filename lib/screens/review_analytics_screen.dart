@@ -258,10 +258,7 @@ class _ReviewAnalyticsScreenState extends State<ReviewAnalyticsScreen>
                   children: [
                     Text(
                       '$rating★',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        width: 30,
-                      ),
+                      style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(width: 8),
                     Expanded(

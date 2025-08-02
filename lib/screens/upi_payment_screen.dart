@@ -43,7 +43,7 @@ class _UpiPaymentScreenState extends State<UpiPaymentScreen> {
   }
 
   bool _validateUpiId(String upiId) {
-    return _paymentService.validateUpiId(upiId);
+    return _paymentService.isValidUPI(upiId);
   }
 
   void _generateQrCode() {

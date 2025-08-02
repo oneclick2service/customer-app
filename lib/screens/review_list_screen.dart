@@ -537,7 +537,7 @@ class _ReviewListScreenState extends State<ReviewListScreen> {
             // Rating
             Row(
               children: [
-                StarRatingDisplay(rating: review.rating, size: 16.0),
+                StarRatingDisplay(rating: review.rating.toDouble(), size: 16.0),
                 const SizedBox(width: 8.0),
                 Text(
                   review.ratingText,

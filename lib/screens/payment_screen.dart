@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../constants/app_constants.dart';
 import '../models/booking_model.dart';
+import '../models/payment_model.dart';
 import '../services/payment_service.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/custom_text_field.dart';
@@ -323,7 +324,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
             if (value == null || value.isEmpty) {
               return 'Please enter UPI ID';
             }
-            if (!PaymentService.isValidUPI(value)) {
+            if (!_paymentService.isValidUPI(value)) {
               return 'Please enter a valid UPI ID';
             }
             return null;
@@ -339,7 +340,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
         const SizedBox(height: 8),
         Wrap(
           spacing: 8,
-          children: PaymentService.getAvailableUPIApps().map((app) {
+          children: _paymentService.getAvailableUPIApps().map((app) {
             final isSelected = _selectedUpiApp == app;
             return GestureDetector(
               onTap: () {
@@ -498,7 +499,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
         const SizedBox(height: 8),
         Wrap(
           spacing: 8,
-          children: PaymentService.getAvailableWallets().map((wallet) {
+          children: _paymentService.getAvailableWallets().map((wallet) {
             final isSelected = _selectedWallet == wallet;
             return GestureDetector(
               onTap: () {
@@ -607,33 +608,28 @@ class _PaymentScreenState extends State<PaymentScreen> {
       switch (_selectedPaymentMethod) {
         case PaymentService.PAYMENT_METHOD_UPI:
           result = await _paymentService.processUPIPayment(
-            bookingId: widget.booking.id,
+            booking: widget.booking,
             amount: _pricingBreakdown['Total']!,
             upiId: _upiIdController.text.trim(),
-            upiApp: _selectedUpiApp,
-            description: 'Payment for ${widget.booking.serviceType}',
           );
           break;
 
         case PaymentService.PAYMENT_METHOD_CARD:
           result = await _paymentService.processCardPayment(
-            bookingId: widget.booking.id,
+            booking: widget.booking,
             amount: _pricingBreakdown['Total']!,
             cardNumber: _cardNumberController.text.trim(),
             expiryDate: _formatExpiryDate(_expiryController.text.trim()),
             cvv: _cvvController.text.trim(),
             cardholderName: _cardholderController.text.trim(),
-            description: 'Payment for ${widget.booking.serviceType}',
           );
           break;
 
         case PaymentService.PAYMENT_METHOD_WALLET:
           result = await _paymentService.processWalletPayment(
-            bookingId: widget.booking.id,
+            booking: widget.booking,
             amount: _pricingBreakdown['Total']!,
             walletType: _selectedWallet!,
-            walletId: _walletIdController.text.trim(),
-            description: 'Payment for ${widget.booking.serviceType}',
           );
           break;
 
@@ -645,7 +641,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(result.message),
+              content: Text('Payment successful!'),
               backgroundColor: Colors.green,
             ),
           );
@@ -653,7 +649,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
         }
       } else {
         setState(() {
-          _error = result.message;
+          _error = result.errorMessage ?? 'Payment failed';
         });
       }
     } catch (e) {
@@ -676,7 +672,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
           });
           return false;
         }
-        if (!PaymentService.isValidUPI(_upiIdController.text.trim())) {
+        if (!_paymentService.isValidUPI(_upiIdController.text.trim())) {
           setState(() {
             _error = 'Please enter a valid UPI ID';
           });

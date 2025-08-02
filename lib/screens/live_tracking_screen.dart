@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import '../constants/app_constants.dart';
-import '../models/service_provider_model.dart';
-import '../models/booking_model.dart';
 import '../providers/location_provider.dart';
 import '../widgets/custom_button.dart';
 

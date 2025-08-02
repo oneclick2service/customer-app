@@ -94,7 +94,7 @@ class PaymentService {
   }
 
   // Generate UPI URL
-  String _generateUpiUrl({
+  String generateUpiUrl({
     required String payeeVpa,
     required double amount,
     required String transactionNote,
@@ -145,7 +145,7 @@ class PaymentService {
     required String upiId,
   }) async {
     try {
-      final upiUrl = _generateUpiUrl(
+      final upiUrl = generateUpiUrl(
         payeeVpa: upiId,
         amount: amount,
         transactionNote: 'Booking ${booking.id}',

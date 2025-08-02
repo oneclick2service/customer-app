@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../constants/app_constants.dart';
 import '../services/payment_service.dart';
 import '../models/payment_model.dart';
-import '../models/booking_model.dart';
 import '../widgets/custom_button.dart';
-import '../widgets/custom_text_field.dart';
 
 class PaymentHistoryScreen extends StatefulWidget {
   const PaymentHistoryScreen({Key? key}) : super(key: key);
@@ -498,11 +494,14 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
           // Search bar
           Padding(
             padding: const EdgeInsets.all(16),
-            child: CustomTextField(
+            child: TextField(
               controller: TextEditingController(text: _searchQuery),
-              labelText: 'Search payments...',
-              hintText: 'Transaction ID, amount, or booking ID',
-              prefixIcon: Icon(Icons.search),
+              decoration: InputDecoration(
+                labelText: 'Search payments...',
+                hintText: 'Transaction ID, amount, or booking ID',
+                prefixIcon: const Icon(Icons.search),
+                border: OutlineInputBorder(),
+              ),
               onChanged: (value) {
                 setState(() {
                   _searchQuery = value;

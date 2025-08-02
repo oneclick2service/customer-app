@@ -7,7 +7,6 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isSmallScreen = ResponsiveUtils.isSmallScreen(context);
     final isVerySmallScreen = ResponsiveUtils.isVerySmallScreen(context);
     final adaptivePadding = ResponsiveUtils.getAdaptivePadding(context);
     final adaptiveSpacing = ResponsiveUtils.getAdaptiveSpacing(context);

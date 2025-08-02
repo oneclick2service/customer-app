@@ -118,7 +118,6 @@ class _RefundDisputeScreenState extends State<RefundDisputeScreen> {
     await _paymentService.updatePaymentStatus(
       widget.payment.id,
       'refund_pending',
-      {'refund_request': refundData},
     );
   }
 
@@ -136,9 +135,7 @@ class _RefundDisputeScreenState extends State<RefundDisputeScreen> {
     await Future.delayed(const Duration(seconds: 2)); // Simulate API call
 
     // Update payment status to 'disputed'
-    await _paymentService.updatePaymentStatus(widget.payment.id, 'disputed', {
-      'dispute_request': disputeData,
-    });
+    await _paymentService.updatePaymentStatus(widget.payment.id, 'disputed');
   }
 
   bool _validateForm() {

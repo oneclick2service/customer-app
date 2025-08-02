@@ -17,6 +17,14 @@ class Review {
   final List<String>? providerResponseAttachments;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final bool isRecent;
+  final bool isVerified;
+  final List<String>? tags;
+  final Map<String, int>? categoryRatings;
+  final bool hasReply;
+  final DateTime? replyDate;
+  final String? replyBy;
+  final String? reply;
 
   Review({
     required this.id,
@@ -35,6 +43,14 @@ class Review {
     this.providerResponseAttachments,
     required this.createdAt,
     required this.updatedAt,
+    this.isRecent = false,
+    this.isVerified = false,
+    this.tags,
+    this.categoryRatings,
+    this.hasReply = false,
+    this.replyDate,
+    this.replyBy,
+    this.reply,
   });
 
   factory Review.fromJson(Map<String, dynamic> json) {
@@ -59,6 +75,20 @@ class Review {
           : null,
       createdAt: DateTime.parse(json['created_at'] as String),
       updatedAt: DateTime.parse(json['updated_at'] as String),
+      isRecent: json['is_recent'] as bool? ?? false,
+      isVerified: json['is_verified'] as bool? ?? false,
+      tags: json['tags'] != null
+          ? List<String>.from(json['tags'] as List)
+          : null,
+      categoryRatings: json['category_ratings'] != null
+          ? Map<String, int>.from(json['category_ratings'] as Map)
+          : null,
+      hasReply: json['has_reply'] as bool? ?? false,
+      replyDate: json['reply_date'] != null
+          ? DateTime.parse(json['reply_date'] as String)
+          : null,
+      replyBy: json['reply_by'] as String?,
+      reply: json['reply'] as String?,
     );
   }
 
@@ -80,6 +110,14 @@ class Review {
       'provider_response_attachments': providerResponseAttachments,
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
+      'is_recent': isRecent,
+      'is_verified': isVerified,
+      'tags': tags,
+      'category_ratings': categoryRatings,
+      'has_reply': hasReply,
+      'reply_date': replyDate?.toIso8601String(),
+      'reply_by': replyBy,
+      'reply': reply,
     };
   }
 
@@ -100,6 +138,14 @@ class Review {
     List<String>? providerResponseAttachments,
     DateTime? createdAt,
     DateTime? updatedAt,
+    bool? isRecent,
+    bool? isVerified,
+    List<String>? tags,
+    Map<String, int>? categoryRatings,
+    bool? hasReply,
+    DateTime? replyDate,
+    String? replyBy,
+    String? reply,
   }) {
     return Review(
       id: id ?? this.id,
@@ -119,11 +165,27 @@ class Review {
           providerResponseAttachments ?? this.providerResponseAttachments,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      isRecent: isRecent ?? this.isRecent,
+      isVerified: isVerified ?? this.isVerified,
+      tags: tags ?? this.tags,
+      categoryRatings: categoryRatings ?? this.categoryRatings,
+      hasReply: hasReply ?? this.hasReply,
+      replyDate: replyDate ?? this.replyDate,
+      replyBy: replyBy ?? this.replyBy,
+      reply: reply ?? this.reply,
     );
   }
 
   bool get hasProviderResponse =>
       providerResponse != null && providerResponse!.isNotEmpty;
+
+  String get displayName => userName;
+
+  Color get ratingColor {
+    if (rating >= 4) return Colors.green;
+    if (rating >= 3) return Colors.orange;
+    return Colors.red;
+  }
 
   String get timeAgo {
     final now = DateTime.now();

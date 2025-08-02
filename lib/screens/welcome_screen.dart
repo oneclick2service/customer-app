@@ -24,16 +24,37 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     final screenWidth = MediaQuery.of(context).size.width;
     final isSmallScreen = screenHeight < 700;
     final isVerySmallScreen = screenHeight < 600;
+    final isExtraSmallScreen = screenHeight < 550;
 
-    // Adaptive spacing based on screen size
-    final adaptivePadding = isSmallScreen
-        ? AppConstants.paddingMedium
-        : AppConstants.paddingLarge;
-    final adaptiveSpacing = isSmallScreen
-        ? AppConstants.paddingMedium
-        : AppConstants.paddingLarge;
-    final adaptiveIconSize = isVerySmallScreen ? 80.0 : 100.0;
-    final adaptiveTitleSize = isVerySmallScreen ? 20.0 : 24.0;
+    // More aggressive adaptive spacing for smaller screens
+    final adaptivePadding = isExtraSmallScreen
+        ? 8.0
+        : isVerySmallScreen
+        ? 12.0
+        : isSmallScreen
+        ? 16.0
+        : 24.0;
+    final adaptiveSpacing = isExtraSmallScreen
+        ? 8.0
+        : isVerySmallScreen
+        ? 12.0
+        : isSmallScreen
+        ? 16.0
+        : 24.0;
+    final adaptiveIconSize = isExtraSmallScreen
+        ? 60.0
+        : isVerySmallScreen
+        ? 70.0
+        : isSmallScreen
+        ? 80.0
+        : 100.0;
+    final adaptiveTitleSize = isExtraSmallScreen
+        ? 16.0
+        : isVerySmallScreen
+        ? 18.0
+        : isSmallScreen
+        ? 20.0
+        : 24.0;
 
     return Scaffold(
       body: Container(
@@ -47,224 +68,221 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
         child: SafeArea(
           child: SingleChildScrollView(
             padding: EdgeInsets.all(adaptivePadding),
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                minHeight:
-                    screenHeight -
-                    MediaQuery.of(context).padding.top -
-                    MediaQuery.of(context).padding.bottom,
-              ),
-              child: IntrinsicHeight(
-                child: Column(
-                  children: [
-                    SizedBox(height: adaptiveSpacing),
+            child: Column(
+              children: [
+                SizedBox(height: adaptiveSpacing),
 
-                    // Welcome Header
-                    Container(
-                      padding: EdgeInsets.all(adaptivePadding),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(
-                          AppConstants.borderRadiusLarge,
-                        ),
-                        border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.2),
-                          width: 1,
-                        ),
-                      ),
-                      child: Column(
-                        children: [
-                          Container(
-                            width: adaptiveIconSize,
-                            height: adaptiveIconSize,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(
-                                AppConstants.borderRadiusLarge,
-                              ),
-                              boxShadow: AppConstants.elevatedShadow,
-                            ),
-                            child: Icon(
-                              Icons.home_repair_service,
-                              size: adaptiveIconSize * 0.5,
-                              color: AppConstants.primaryColor,
-                            ),
-                          ),
-
-                          SizedBox(height: adaptiveSpacing),
-
-                          Text(
-                            'Welcome to One Click 2 Service',
-                            style: AppConstants.headingStyle.copyWith(
-                              color: Colors.white,
-                              fontSize: adaptiveTitleSize,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-
-                          SizedBox(height: AppConstants.paddingMedium),
-
-                          Text(
-                            'Get reliable service providers at your doorstep in Vijayawada',
-                            style: AppConstants.bodyStyle.copyWith(
-                              color: Colors.white.withValues(alpha: 0.9),
-                              fontSize: isVerySmallScreen ? 14 : 16,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
-                      ),
+                // Welcome Header
+                Container(
+                  padding: EdgeInsets.all(adaptivePadding),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(
+                      AppConstants.borderRadiusLarge,
                     ),
-
-                    SizedBox(height: adaptiveSpacing),
-
-                    // Features List - Only show on larger screens
-                    if (!isVerySmallScreen) ...[
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.2),
+                      width: 1,
+                    ),
+                  ),
+                  child: Column(
+                    children: [
                       Container(
-                        padding: EdgeInsets.all(adaptivePadding),
+                        width: adaptiveIconSize,
+                        height: adaptiveIconSize,
                         decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.1),
+                          color: Colors.white,
                           borderRadius: BorderRadius.circular(
                             AppConstants.borderRadiusLarge,
                           ),
-                          border: Border.all(
-                            color: Colors.white.withValues(alpha: 0.2),
-                            width: 1,
-                          ),
+                          boxShadow: AppConstants.elevatedShadow,
                         ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Why Choose Us?',
-                              style: AppConstants.subheadingStyle.copyWith(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: isSmallScreen ? 16 : 18,
-                              ),
-                            ),
-
-                            SizedBox(height: AppConstants.paddingMedium),
-
-                            _buildFeatureItem(
-                              icon: Icons.verified,
-                              title: 'Verified Providers',
-                              subtitle:
-                                  'Background-checked service professionals',
-                              isSmallScreen: isSmallScreen,
-                            ),
-
-                            _buildFeatureItem(
-                              icon: Icons.schedule,
-                              title: 'Instant Booking',
-                              subtitle: 'Book services in just one click',
-                              isSmallScreen: isSmallScreen,
-                            ),
-
-                            _buildFeatureItem(
-                              icon: Icons.location_on,
-                              title: 'Real-time Tracking',
-                              subtitle: 'Track your service provider live',
-                              isSmallScreen: isSmallScreen,
-                            ),
-
-                            _buildFeatureItem(
-                              icon: Icons.payment,
-                              title: 'Transparent Pricing',
-                              subtitle: 'No hidden charges, clear pricing',
-                              isSmallScreen: isSmallScreen,
-                            ),
-                          ],
+                        child: Icon(
+                          Icons.home_repair_service,
+                          size: adaptiveIconSize * 0.5,
+                          color: AppConstants.primaryColor,
                         ),
                       ),
 
                       SizedBox(height: adaptiveSpacing),
-                    ],
 
-                    // Phone Number Input
-                    Container(
-                      padding: EdgeInsets.all(adaptivePadding),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(
-                          AppConstants.borderRadiusLarge,
+                      Text(
+                        'Welcome to One Click 2 Service',
+                        style: AppConstants.headingStyle.copyWith(
+                          color: Colors.white,
+                          fontSize: adaptiveTitleSize,
+                          fontWeight: FontWeight.bold,
                         ),
-                        boxShadow: AppConstants.elevatedShadow,
+                        textAlign: TextAlign.center,
                       ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Get Started',
-                            style: AppConstants.subheadingStyle.copyWith(
-                              color: AppConstants.textPrimaryColor,
-                              fontSize: isSmallScreen ? 16 : 18,
-                            ),
-                          ),
 
-                          SizedBox(height: AppConstants.paddingMedium),
+                      SizedBox(height: AppConstants.paddingMedium),
 
-                          // Error Message
-                          if (_error != null)
-                            Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.all(
-                                AppConstants.paddingSmall,
-                              ),
-                              margin: const EdgeInsets.only(
-                                bottom: AppConstants.paddingMedium,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.red.shade50,
-                                borderRadius: BorderRadius.circular(
-                                  AppConstants.borderRadiusSmall,
-                                ),
-                                border: Border.all(color: Colors.red.shade200),
-                              ),
-                              child: Text(
-                                _error!,
-                                style: TextStyle(
-                                  color: Colors.red.shade700,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ),
+                      Text(
+                        'Get reliable service providers at your doorstep in Vijayawada',
+                        style: AppConstants.bodyStyle.copyWith(
+                          color: Colors.white.withValues(alpha: 0.9),
+                          fontSize: isExtraSmallScreen
+                              ? 12
+                              : isVerySmallScreen
+                              ? 14
+                              : 16,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
 
-                          CustomTextField(
-                            controller: _phoneController,
-                            hintText: 'Enter your phone number',
-                            prefixIcon: const Icon(Icons.phone),
-                            keyboardType: TextInputType.phone,
-                          ),
+                SizedBox(height: adaptiveSpacing),
 
-                          SizedBox(height: AppConstants.paddingMedium),
-
-                          Text(
-                            'We\'ll send you a verification code',
-                            style: AppConstants.captionStyle.copyWith(
-                              color: AppConstants.textSecondaryColor,
-                              fontSize: isVerySmallScreen ? 12 : 14,
-                            ),
-                          ),
-
-                          SizedBox(height: adaptiveSpacing),
-
-                          SizedBox(
-                            width: double.infinity,
-                            child: CustomButton(
-                              onPressed: _isLoading ? null : _sendOtp,
-                              text: _isLoading ? 'Sending...' : 'Continue',
-                            ),
-                          ),
-                        ],
+                // Features List - Only show on larger screens
+                if (!isExtraSmallScreen) ...[
+                  Container(
+                    padding: EdgeInsets.all(adaptivePadding),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(
+                        AppConstants.borderRadiusLarge,
+                      ),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.2),
+                        width: 1,
                       ),
                     ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Why Choose Us?',
+                          style: AppConstants.subheadingStyle.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: isSmallScreen ? 16 : 18,
+                          ),
+                        ),
 
-                    SizedBox(height: adaptiveSpacing),
-                  ],
+                        SizedBox(height: AppConstants.paddingMedium),
+
+                        _buildFeatureItem(
+                          icon: Icons.verified,
+                          title: 'Verified Providers',
+                          subtitle: 'Background-checked service professionals',
+                          isSmallScreen: isSmallScreen,
+                        ),
+
+                        _buildFeatureItem(
+                          icon: Icons.schedule,
+                          title: 'Instant Booking',
+                          subtitle: 'Book services in just one click',
+                          isSmallScreen: isSmallScreen,
+                        ),
+
+                        _buildFeatureItem(
+                          icon: Icons.location_on,
+                          title: 'Real-time Tracking',
+                          subtitle: 'Track your service provider live',
+                          isSmallScreen: isSmallScreen,
+                        ),
+
+                        _buildFeatureItem(
+                          icon: Icons.payment,
+                          title: 'Transparent Pricing',
+                          subtitle: 'No hidden charges, clear pricing',
+                          isSmallScreen: isSmallScreen,
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  SizedBox(height: adaptiveSpacing),
+                ],
+
+                // Phone Number Input
+                Container(
+                  padding: EdgeInsets.all(adaptivePadding),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(
+                      AppConstants.borderRadiusLarge,
+                    ),
+                    boxShadow: AppConstants.elevatedShadow,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Get Started',
+                        style: AppConstants.subheadingStyle.copyWith(
+                          color: AppConstants.textPrimaryColor,
+                          fontSize: isSmallScreen ? 16 : 18,
+                        ),
+                      ),
+
+                      SizedBox(height: AppConstants.paddingMedium),
+
+                      // Error Message
+                      if (_error != null)
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(
+                            AppConstants.paddingSmall,
+                          ),
+                          margin: const EdgeInsets.only(
+                            bottom: AppConstants.paddingMedium,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.red.shade50,
+                            borderRadius: BorderRadius.circular(
+                              AppConstants.borderRadiusSmall,
+                            ),
+                            border: Border.all(color: Colors.red.shade200),
+                          ),
+                          child: Text(
+                            _error!,
+                            style: TextStyle(
+                              color: Colors.red.shade700,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+
+                      CustomTextField(
+                        controller: _phoneController,
+                        hintText: 'Enter your phone number',
+                        prefixIcon: const Icon(Icons.phone),
+                        keyboardType: TextInputType.phone,
+                      ),
+
+                      SizedBox(height: AppConstants.paddingMedium),
+
+                      Text(
+                        'We\'ll send you a verification code',
+                        style: AppConstants.captionStyle.copyWith(
+                          color: AppConstants.textSecondaryColor,
+                          fontSize: isExtraSmallScreen
+                              ? 10
+                              : isVerySmallScreen
+                              ? 12
+                              : 14,
+                        ),
+                      ),
+
+                      SizedBox(height: adaptiveSpacing),
+
+                      SizedBox(
+                        width: double.infinity,
+                        child: CustomButton(
+                          onPressed: _isLoading ? null : _sendOtp,
+                          text: _isLoading ? 'Sending...' : 'Continue',
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
+
+                SizedBox(height: adaptiveSpacing),
+              ],
             ),
           ),
         ),

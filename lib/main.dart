@@ -13,8 +13,6 @@ import 'providers/location_provider.dart';
 
 // Import screens
 import 'screens/splash_screen.dart';
-import 'screens/test_screen.dart';
-import 'screens/account_type_selection_screen.dart';
 
 // Import services
 import 'services/notification_service.dart';

@@ -19,7 +19,6 @@ class LocationPickerScreen extends StatefulWidget {
 
 class _LocationPickerScreenState extends State<LocationPickerScreen> {
   final TextEditingController _searchController = TextEditingController();
-  final LocationProvider _locationProvider = LocationProvider();
   final AuthProvider _authProvider = AuthProvider();
 
   GoogleMapController? _mapController;

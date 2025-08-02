@@ -228,7 +228,7 @@ class LocationProvider extends ChangeNotifier {
   // Get current location as LatLng
   Future<LatLng?> getCurrentLocationAsLatLng() async {
     try {
-      final position = await getCurrentLocation();
+      await getCurrentLocation();
       if (_currentPosition != null) {
         return LatLng(_currentPosition!.latitude, _currentPosition!.longitude);
       }

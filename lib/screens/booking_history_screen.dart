@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../constants/app_constants.dart';
 import '../models/booking_model.dart';
-import '../models/service_provider_model.dart';
 import '../providers/booking_provider.dart';
 import '../services/booking_status_service.dart';
 import '../widgets/custom_button.dart';

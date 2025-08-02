@@ -5,7 +5,6 @@ import '../services/session_service.dart';
 import '../services/supabase_service.dart';
 
 class AuthProvider extends ChangeNotifier {
-  final SupabaseClient _supabase = Supabase.instance.client;
   final SessionService _sessionService = SessionService();
   final SupabaseService _supabaseService = SupabaseService();
 

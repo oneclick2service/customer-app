@@ -54,7 +54,7 @@ class ReviewProvider with ChangeNotifier {
       _error = null;
       notifyListeners();
 
-      final reviews = await _reviewService.getProviderReviews(providerId);
+      final reviews = await _reviewService.getProviderReviews(providerId: providerId);
       _reviews = reviews;
       _isLoading = false;
       notifyListeners();
@@ -102,9 +102,9 @@ class ReviewProvider with ChangeNotifier {
       _error = null;
       notifyListeners();
 
-      final success = await _reviewService.updateReview(review);
+      final success = await _reviewService.updateReview(reviewId: review.id);
 
-      if (success) {
+      if (success != null) {
         // Update the review in the list
         final index = _reviews.indexWhere((r) => r.id == review.id);
         if (index != -1) {
@@ -116,7 +116,7 @@ class ReviewProvider with ChangeNotifier {
       _isLoading = false;
       notifyListeners();
 
-      return success;
+      return success != null;
     } catch (e) {
       _error = e.toString();
       _isLoading = false;
@@ -132,18 +132,16 @@ class ReviewProvider with ChangeNotifier {
       _error = null;
       notifyListeners();
 
-      final success = await _reviewService.deleteReview(reviewId);
+      await _reviewService.deleteReview(reviewId);
 
-      if (success) {
-        // Remove the review from the list
-        _reviews.removeWhere((r) => r.id == reviewId);
-        notifyListeners();
-      }
+      // Remove the review from the list
+      _reviews.removeWhere((r) => r.id == reviewId);
+      notifyListeners();
 
       _isLoading = false;
       notifyListeners();
 
-      return success;
+      return true;
     } catch (e) {
       _error = e.toString();
       _isLoading = false;
@@ -152,30 +150,35 @@ class ReviewProvider with ChangeNotifier {
     }
   }
 
-  // Toggle helpful vote on a review
+  // Toggle helpful status
   Future<bool> toggleHelpful(String reviewId) async {
     try {
+      _isLoading = true;
+      _error = null;
+      notifyListeners();
+
       final success = await _reviewService.toggleHelpful(reviewId);
 
       if (success) {
-        // Update the review's helpful status in the list
+        // Update the review in the list
         final index = _reviews.indexWhere((r) => r.id == reviewId);
         if (index != -1) {
           final review = _reviews[index];
-          final updatedReview = review.copyWith(
+          _reviews[index] = review.copyWith(
+            helpfulCount: review.isHelpful ? review.helpfulCount - 1 : review.helpfulCount + 1,
             isHelpful: !review.isHelpful,
-            helpfulCount: review.isHelpful
-                ? review.helpfulCount - 1
-                : review.helpfulCount + 1,
           );
-          _reviews[index] = updatedReview;
           notifyListeners();
         }
       }
 
+      _isLoading = false;
+      notifyListeners();
+
       return success;
     } catch (e) {
       _error = e.toString();
+      _isLoading = false;
       notifyListeners();
       return false;
     }

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../widgets/custom_button.dart';
-import '../widgets/custom_text_field.dart';
 import '../models/booking_model.dart';
 
 class DigitalWalletScreen extends StatefulWidget {
