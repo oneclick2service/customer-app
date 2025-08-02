@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../constants/app_constants.dart';
 import '../services/payment_service.dart';
+import '../models/payment_model.dart';
 import '../models/booking_model.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/custom_text_field.dart';
@@ -376,14 +378,14 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
               _buildDetailRow('Status', payment.status.toUpperCase()),
               _buildDetailRow('Created', _formatDateTime(payment.createdAt)),
               _buildDetailRow('Updated', _formatDateTime(payment.updatedAt)),
-              if (payment.metadata.isNotEmpty) ...[
+              if (payment.metadata?.isNotEmpty == true) ...[
                 const SizedBox(height: 16),
                 const Text(
                   'Additional Details:',
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 8),
-                ...payment.metadata.entries.map(
+                ...payment.metadata!.entries.map(
                   (entry) => _buildDetailRow(entry.key, entry.value.toString()),
                 ),
               ],
@@ -427,11 +429,11 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
 
   Future<void> _downloadReceipt(PaymentRecord payment) async {
     try {
-      final receipt = await _paymentService.generateReceipt(payment.id);
+      final receipt = await _paymentService.generateReceipt(payment);
       // TODO: Implement actual receipt download
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Receipt downloaded: ${receipt['filename']}')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Receipt downloaded: ${receipt}')));
     } catch (e) {
       ScaffoldMessenger.of(
         context,

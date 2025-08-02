@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../models/booking_model.dart';
+import '../models/payment_model.dart';
 
 enum PaymentMethod { razorpay, upiIntent, card, wallet }
 
@@ -10,6 +11,12 @@ class PaymentService {
   static final PaymentService _instance = PaymentService._internal();
   factory PaymentService() => _instance;
   PaymentService._internal();
+
+  // Payment method constants
+  static const String PAYMENT_METHOD_UPI = 'upi';
+  static const String PAYMENT_METHOD_CARD = 'card';
+  static const String PAYMENT_METHOD_WALLET = 'wallet';
+  static const String PAYMENT_METHOD_RAZORPAY = 'razorpay';
 
   Razorpay? _razorpay;
   bool _isRazorpayInitialized = false;
@@ -86,52 +93,8 @@ class PaymentService {
     }
   }
 
-  // Intent-based UPI Payment
-  Future<Map<String, dynamic>> processUpiIntentPayment({
-    required BookingModel booking,
-    required double amount,
-    required String upiId,
-  }) async {
-    try {
-      // Generate UPI payment URL
-      final upiUrl = _generateUpiUrl(
-        payeeVpa: upiId,
-        amount: amount,
-        transactionNote: 'Booking ${booking.id}',
-        merchantName: 'OneClick2Service',
-      );
-
-      // Launch UPI intent
-      final uri = Uri.parse(upiUrl);
-      final canLaunch = await canLaunchUrl(uri);
-
-      if (canLaunch) {
-        await launchUrl(uri, mode: LaunchMode.externalApplication);
-
-        return {
-          'success': true,
-          'message': 'UPI payment intent launched',
-          'method': 'upi_intent',
-          'upiUrl': upiUrl,
-        };
-      } else {
-        return {
-          'success': false,
-          'message': 'No UPI app found on device',
-          'method': 'upi_intent',
-        };
-      }
-    } catch (e) {
-      return {
-        'success': false,
-        'message': 'Failed to launch UPI intent: $e',
-        'method': 'upi_intent',
-      };
-    }
-  }
-
   // Generate UPI URL
-  String generateUpiUrl({
+  String _generateUpiUrl({
     required String payeeVpa,
     required double amount,
     required String transactionNote,
@@ -153,46 +116,185 @@ class PaymentService {
   }
 
   // Validate UPI ID
-  bool validateUpiId(String upiId) {
+  bool isValidUPI(String upiId) {
     final upiRegex = RegExp(r'^[a-zA-Z0-9._-]+@[a-zA-Z]{3,}$');
     return upiRegex.hasMatch(upiId);
   }
 
   // Get available UPI apps
-  Future<List<String>> getAvailableUpiApps() async {
-    // Common UPI apps in India
-    final upiApps = [
-      'com.google.android.apps.nbu.paisa.user', // Google Pay
-      'net.one97.paytm', // Paytm
-      'in.amazonpay', // Amazon Pay
-      'com.phonepe.app', // PhonePe
-      'com.mobikwik_new', // MobiKwik
-      'com.axis.bank.android', // Axis Bank
-      'com.hdfcbank.hdfcbankmobile', // HDFC Bank
-      'com.icici.bank.imobile', // ICICI Bank
-    ];
-
-    final availableApps = <String>[];
-
-    for (final app in upiApps) {
-      try {
-        final uri = Uri.parse('$app://');
-        if (await canLaunchUrl(uri)) {
-          availableApps.add(app);
-        }
-      } catch (e) {
-        // App not available
-      }
-    }
-
-    return availableApps;
+  List<String> getAvailableUPIApps() {
+    return ['Google Pay', 'Paytm', 'PhonePe', 'Amazon Pay', 'BHIM', 'MobiKwik'];
   }
 
-  // Launch specific UPI app
-  Future<bool> launchUpiApp(String packageName, String upiUrl) async {
+  // Get available wallets
+  List<String> getAvailableWallets() {
+    return [
+      'Paytm',
+      'PhonePe',
+      'Google Pay',
+      'Amazon Pay',
+      'MobiKwik',
+      'Freecharge',
+    ];
+  }
+
+  // Process UPI Payment
+  Future<PaymentResult> processUPIPayment({
+    required BookingModel booking,
+    required double amount,
+    required String upiId,
+  }) async {
     try {
-      final uri = Uri.parse('$packageName://upi/pay?$upiUrl');
-      return await launchUrl(uri, mode: LaunchMode.externalApplication);
+      final upiUrl = _generateUpiUrl(
+        payeeVpa: upiId,
+        amount: amount,
+        transactionNote: 'Booking ${booking.id}',
+        merchantName: 'OneClick2Service',
+      );
+
+      final uri = Uri.parse(upiUrl);
+      final canLaunch = await canLaunchUrl(uri);
+
+      if (canLaunch) {
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+        return PaymentResult(
+          success: true,
+          paymentMethod: PAYMENT_METHOD_UPI,
+          amount: amount,
+          currency: 'INR',
+          timestamp: DateTime.now(),
+        );
+      } else {
+        return PaymentResult(
+          success: false,
+          errorMessage: 'No UPI app found on device',
+          paymentMethod: PAYMENT_METHOD_UPI,
+          amount: amount,
+          currency: 'INR',
+          timestamp: DateTime.now(),
+        );
+      }
+    } catch (e) {
+      return PaymentResult(
+        success: false,
+        errorMessage: 'Failed to process UPI payment: $e',
+        paymentMethod: PAYMENT_METHOD_UPI,
+        amount: amount,
+        currency: 'INR',
+        timestamp: DateTime.now(),
+      );
+    }
+  }
+
+  // Process Card Payment
+  Future<PaymentResult> processCardPayment({
+    required BookingModel booking,
+    required double amount,
+    required String cardNumber,
+    required String expiryDate,
+    required String cvv,
+    required String cardholderName,
+  }) async {
+    try {
+      // Simulate card payment processing
+      await Future.delayed(Duration(seconds: 2));
+
+      return PaymentResult(
+        success: true,
+        paymentId: generateTransactionId(),
+        transactionId: generateTransactionId(),
+        paymentMethod: PAYMENT_METHOD_CARD,
+        amount: amount,
+        currency: 'INR',
+        timestamp: DateTime.now(),
+      );
+    } catch (e) {
+      return PaymentResult(
+        success: false,
+        errorMessage: 'Failed to process card payment: $e',
+        paymentMethod: PAYMENT_METHOD_CARD,
+        amount: amount,
+        currency: 'INR',
+        timestamp: DateTime.now(),
+      );
+    }
+  }
+
+  // Process Wallet Payment
+  Future<PaymentResult> processWalletPayment({
+    required BookingModel booking,
+    required double amount,
+    required String walletType,
+  }) async {
+    try {
+      // Simulate wallet payment processing
+      await Future.delayed(Duration(seconds: 2));
+
+      return PaymentResult(
+        success: true,
+        paymentId: generateTransactionId(),
+        transactionId: generateTransactionId(),
+        paymentMethod: PAYMENT_METHOD_WALLET,
+        amount: amount,
+        currency: 'INR',
+        timestamp: DateTime.now(),
+      );
+    } catch (e) {
+      return PaymentResult(
+        success: false,
+        errorMessage: 'Failed to process wallet payment: $e',
+        paymentMethod: PAYMENT_METHOD_WALLET,
+        amount: amount,
+        currency: 'INR',
+        timestamp: DateTime.now(),
+      );
+    }
+  }
+
+  // Get Payment History
+  Future<List<PaymentRecord>> getPaymentHistory() async {
+    // Simulate fetching payment history
+    await Future.delayed(Duration(seconds: 1));
+
+    return [
+      PaymentRecord(
+        id: '1',
+        bookingId: 'booking_1',
+        userId: 'user_1',
+        amount: 500.0,
+        currency: 'INR',
+        paymentMethod: PAYMENT_METHOD_UPI,
+        status: 'completed',
+        transactionId: 'TXN123456',
+        createdAt: DateTime.now().subtract(Duration(days: 1)),
+        updatedAt: DateTime.now().subtract(Duration(days: 1)),
+        processedAt: DateTime.now().subtract(Duration(days: 1)),
+      ),
+    ];
+  }
+
+  // Generate Receipt
+  Future<String> generateReceipt(PaymentRecord payment) async {
+    // Simulate receipt generation
+    await Future.delayed(Duration(seconds: 1));
+
+    return '''
+Receipt
+========
+Transaction ID: ${payment.transactionId}
+Amount: ₹${payment.amount}
+Payment Method: ${payment.paymentMethod}
+Date: ${payment.createdAt.toString()}
+Status: ${payment.status}
+    ''';
+  }
+
+  // Update Payment Status
+  Future<bool> updatePaymentStatus(String paymentId, String status) async {
+    try {
+      // Simulate updating payment status
+      await Future.delayed(Duration(seconds: 1));
+      return true;
     } catch (e) {
       return false;
     }

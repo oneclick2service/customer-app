@@ -375,6 +375,16 @@ class NotificationService {
     }
   }
 
+  // Test notification method (public)
+  Future<void> showTestNotification() async {
+    await _showNotification(
+      id: DateTime.now().millisecondsSinceEpoch,
+      title: 'Test Notification',
+      body: 'This is a test push notification from One Click 2 Service!',
+      payload: 'test',
+    );
+  }
+
   // Dispose resources
   void dispose() {
     _notificationSubscription?.unsubscribe();

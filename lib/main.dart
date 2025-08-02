@@ -16,6 +16,9 @@ import 'screens/splash_screen.dart';
 import 'screens/test_screen.dart';
 import 'screens/account_type_selection_screen.dart';
 
+// Import services
+import 'services/notification_service.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -25,6 +28,9 @@ void main() async {
     anonKey:
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhyam9peml0bWNqamVhd2ltYXFzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQxNDcxOTgsImV4cCI6MjA2OTcyMzE5OH0.lWt6K2Dm6pIbTFklfUGpABwenI51ID5yUw2AEH0foyo',
   );
+
+  // Initialize notification service
+  await NotificationService().initialize();
 
   runApp(const OneClickApp());
 }

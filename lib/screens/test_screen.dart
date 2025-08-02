@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../constants/app_constants.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/custom_text_field.dart';
+import '../services/notification_service.dart';
 
 class TestScreen extends StatefulWidget {
   const TestScreen({super.key});
@@ -14,6 +15,7 @@ class _TestScreenState extends State<TestScreen> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _otpController = TextEditingController();
   bool _isLoading = false;
+  final NotificationService _notificationService = NotificationService();
 
   @override
   Widget build(BuildContext context) {
@@ -160,6 +162,35 @@ class _TestScreenState extends State<TestScreen> {
 
                       const SizedBox(height: AppConstants.paddingMedium),
 
+                      // Notification Test Button
+                      SizedBox(
+                        width: double.infinity,
+                        child: CustomButton(
+                          onPressed: () async {
+                            try {
+                              await _notificationService.showTestNotification();
+
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Test notification sent!'),
+                                  backgroundColor: Colors.green,
+                                ),
+                              );
+                            } catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Error: $e'),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                            }
+                          },
+                          text: 'Test Push Notification',
+                        ),
+                      ),
+
+                      const SizedBox(height: AppConstants.paddingMedium),
+
                       // Feature List
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -180,6 +211,7 @@ class _TestScreenState extends State<TestScreen> {
                           _buildFeatureItem('Booking Management'),
                           _buildFeatureItem('Profile Management'),
                           _buildFeatureItem('Service Provider Verification'),
+                          _buildFeatureItem('Push Notifications'),
                         ],
                       ),
                     ],

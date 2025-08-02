@@ -147,3 +147,50 @@ class Review {
     return 'Poor';
   }
 }
+
+// Alias for ReviewModel to maintain compatibility
+class ReviewModel extends Review {
+  ReviewModel({
+    required super.id,
+    required super.providerId,
+    required super.userId,
+    required super.userName,
+    super.userProfileImage,
+    required super.rating,
+    required super.comment,
+    required super.aspectRatings,
+    required super.helpfulCount,
+    required super.isHelpful,
+    required super.isReported,
+    super.providerResponse,
+    super.providerResponseDate,
+    super.providerResponseAttachments,
+    required super.createdAt,
+    required super.updatedAt,
+  });
+
+  factory ReviewModel.fromJson(Map<String, dynamic> json) {
+    return ReviewModel(
+      id: json['id'] as String,
+      providerId: json['provider_id'] as String,
+      userId: json['user_id'] as String,
+      userName: json['user_name'] as String,
+      userProfileImage: json['user_profile_image'] as String?,
+      rating: json['rating'] as int,
+      comment: json['comment'] as String,
+      aspectRatings: Map<String, int>.from(json['aspect_ratings'] ?? {}),
+      helpfulCount: json['helpful_count'] as int? ?? 0,
+      isHelpful: json['is_helpful'] as bool? ?? false,
+      isReported: json['is_reported'] as bool? ?? false,
+      providerResponse: json['provider_response'] as String?,
+      providerResponseDate: json['provider_response_date'] != null
+          ? DateTime.parse(json['provider_response_date'] as String)
+          : null,
+      providerResponseAttachments: json['provider_response_attachments'] != null
+          ? List<String>.from(json['provider_response_attachments'] as List)
+          : null,
+      createdAt: DateTime.parse(json['created_at'] as String),
+      updatedAt: DateTime.parse(json['updated_at'] as String),
+    );
+  }
+}

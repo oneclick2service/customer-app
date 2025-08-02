@@ -88,8 +88,8 @@ dependencies:
   # Real-time Features
   web_socket_channel: ^2.4.0
 
-  # Payment Integration (for future use)
-  # razorpay_flutter: ^1.4.0
+  # Payment Integration
+  razorpay_flutter: ^1.4.0
 
 dev_dependencies:
   flutter_test:

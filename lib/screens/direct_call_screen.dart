@@ -6,8 +6,8 @@ import '../models/booking_model.dart';
 import '../widgets/custom_button.dart';
 
 class DirectCallScreen extends StatefulWidget {
-  final ServiceProvider? provider;
-  final Booking? booking;
+  final ServiceProviderModel? provider;
+  final BookingModel? booking;
 
   const DirectCallScreen({Key? key, this.provider, this.booking})
     : super(key: key);
@@ -42,7 +42,7 @@ class _DirectCallScreenState extends State<DirectCallScreen> {
             id: '1',
             providerId: widget.provider?.id ?? 'provider_1',
             providerName: widget.provider?.name ?? 'John Electrician',
-            phoneNumber: widget.provider?.phone ?? '+91 9876543210',
+            phoneNumber: widget.provider?.phoneNumber ?? '+91 9876543210',
             callType: CallType.outgoing,
             duration: const Duration(minutes: 5, seconds: 32),
             timestamp: DateTime.now().subtract(const Duration(hours: 2)),
@@ -52,7 +52,7 @@ class _DirectCallScreenState extends State<DirectCallScreen> {
             id: '2',
             providerId: widget.provider?.id ?? 'provider_1',
             providerName: widget.provider?.name ?? 'John Electrician',
-            phoneNumber: widget.provider?.phone ?? '+91 9876543210',
+            phoneNumber: widget.provider?.phoneNumber ?? '+91 9876543210',
             callType: CallType.incoming,
             duration: const Duration(minutes: 2, seconds: 15),
             timestamp: DateTime.now().subtract(const Duration(days: 1)),
@@ -221,7 +221,7 @@ class _DirectCallScreenState extends State<DirectCallScreen> {
                         Icon(Icons.star, color: Colors.amber, size: 16),
                         const SizedBox(width: 4),
                         Text(
-                          '${provider.rating} (${provider.reviewCount} reviews)',
+                          '${provider.rating} (${provider.totalReviews} reviews)',
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
                       ],
@@ -237,7 +237,7 @@ class _DirectCallScreenState extends State<DirectCallScreen> {
               Icon(Icons.phone, color: AppConstants.primaryColor, size: 20),
               const SizedBox(width: 8),
               Text(
-                provider.phone,
+                provider.phoneNumber,
                 style: Theme.of(
                   context,
                 ).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
@@ -265,7 +265,7 @@ class _DirectCallScreenState extends State<DirectCallScreen> {
             Expanded(
               child: CustomButton(
                 text: 'Call Now',
-                onPressed: () => _makeCall(widget.provider?.phone ?? ''),
+                onPressed: () => _makeCall(widget.provider?.phoneNumber ?? ''),
                 backgroundColor: Colors.green,
                 textColor: Colors.white,
               ),

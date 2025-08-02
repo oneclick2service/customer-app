@@ -4,15 +4,13 @@ import 'package:provider/provider.dart';
 import '../constants/app_constants.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/custom_button.dart';
+import '../utils/responsive_utils.dart';
 import 'account_type_selection_screen.dart';
 
 class OtpVerificationScreen extends StatefulWidget {
   final String phoneNumber;
 
-  const OtpVerificationScreen({
-    super.key,
-    required this.phoneNumber,
-  });
+  const OtpVerificationScreen({super.key, required this.phoneNumber});
 
   @override
   State<OtpVerificationScreen> createState() => _OtpVerificationScreenState();
@@ -23,10 +21,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
     6,
     (index) => TextEditingController(),
   );
-  final List<FocusNode> _focusNodes = List.generate(
-    6,
-    (index) => FocusNode(),
-  );
+  final List<FocusNode> _focusNodes = List.generate(6, (index) => FocusNode());
   bool _isLoading = false;
   bool _isResendLoading = false;
   int _resendCountdown = 30;
@@ -50,7 +45,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
 
   Future<void> _verifyOtp() async {
     final otp = _otpControllers.map((controller) => controller.text).join();
-    
+
     if (otp.length != 6) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -67,7 +62,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
 
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final success = await authProvider.verifyOtp(widget.phoneNumber, otp);
-    
+
     if (mounted) {
       setState(() {
         _isLoading = false;
@@ -100,7 +95,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
 
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final success = await authProvider.sendOtp(widget.phoneNumber);
-    
+
     if (mounted) {
       setState(() {
         _isResendLoading = false;
@@ -136,6 +131,13 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isSmallScreen = ResponsiveUtils.isSmallScreen(context);
+    final isVerySmallScreen = ResponsiveUtils.isVerySmallScreen(context);
+    final adaptivePadding = ResponsiveUtils.getAdaptivePadding(context);
+    final adaptiveSpacing = ResponsiveUtils.getAdaptiveSpacing(context);
+    final adaptiveIconSize = ResponsiveUtils.getAdaptiveIconSize(context);
+    final adaptiveTitleSize = ResponsiveUtils.getAdaptiveTitleSize(context);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Verify OTP'),
@@ -145,101 +147,113 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
         ),
       ),
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: AppConstants.primaryGradient,
-        ),
+        decoration: const BoxDecoration(gradient: AppConstants.primaryGradient),
         child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(AppConstants.paddingLarge),
+          child: ResponsiveUtils.scrollableContent(
+            context: context,
             child: Column(
               children: [
-                const Spacer(),
-                
+                SizedBox(height: adaptiveSpacing),
+
                 // Header
                 Container(
-                  padding: const EdgeInsets.all(AppConstants.paddingLarge),
+                  padding: EdgeInsets.all(adaptivePadding),
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(AppConstants.borderRadiusLarge),
+                    borderRadius: BorderRadius.circular(
+                      AppConstants.borderRadiusLarge,
+                    ),
                     boxShadow: AppConstants.elevatedShadow,
                   ),
                   child: Column(
                     children: [
                       // Phone Icon
                       Container(
-                        width: 80,
-                        height: 80,
+                        width: adaptiveIconSize,
+                        height: adaptiveIconSize,
                         decoration: BoxDecoration(
                           color: AppConstants.primaryColor.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(AppConstants.borderRadiusLarge),
+                          borderRadius: BorderRadius.circular(
+                            AppConstants.borderRadiusLarge,
+                          ),
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.phone_android,
-                          size: 40,
+                          size: adaptiveIconSize * 0.5,
                           color: AppConstants.primaryColor,
                         ),
                       ),
-                      
-                      const SizedBox(height: AppConstants.marginLarge),
-                      
+
+                      SizedBox(height: adaptiveSpacing),
+
                       // Title
                       Text(
                         'Verify Your Number',
-                        style: AppConstants.headingStyle,
+                        style: AppConstants.headingStyle.copyWith(
+                          fontSize: adaptiveTitleSize,
+                        ),
                         textAlign: TextAlign.center,
                       ),
-                      
-                      const SizedBox(height: AppConstants.marginMedium),
-                      
+
+                      SizedBox(height: AppConstants.marginMedium),
+
                       // Description
                       Text(
                         'We\'ve sent a 6-digit code to',
                         style: AppConstants.bodyStyle.copyWith(
                           color: AppConstants.textSecondaryColor,
+                          fontSize: ResponsiveUtils.getAdaptiveBodySize(
+                            context,
+                          ),
                         ),
                         textAlign: TextAlign.center,
                       ),
-                      
+
                       const SizedBox(height: AppConstants.marginSmall),
-                      
+
                       Text(
                         widget.phoneNumber,
                         style: AppConstants.subheadingStyle.copyWith(
                           color: AppConstants.primaryColor,
+                          fontSize: isSmallScreen ? 16 : 18,
                         ),
                         textAlign: TextAlign.center,
                       ),
                     ],
                   ),
                 ),
-                
-                const SizedBox(height: AppConstants.marginLarge),
-                
+
+                SizedBox(height: adaptiveSpacing),
+
                 // OTP Input
                 Container(
-                  padding: const EdgeInsets.all(AppConstants.paddingLarge),
+                  padding: EdgeInsets.all(adaptivePadding),
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(AppConstants.borderRadiusLarge),
+                    borderRadius: BorderRadius.circular(
+                      AppConstants.borderRadiusLarge,
+                    ),
                     boxShadow: AppConstants.elevatedShadow,
                   ),
                   child: Column(
                     children: [
                       Text(
                         'Enter OTP',
-                        style: AppConstants.subheadingStyle,
+                        style: AppConstants.subheadingStyle.copyWith(
+                          fontSize: isSmallScreen ? 16 : 18,
+                        ),
                         textAlign: TextAlign.center,
                       ),
-                      
-                      const SizedBox(height: AppConstants.marginMedium),
-                      
+
+                      SizedBox(height: AppConstants.marginMedium),
+
                       // OTP Fields
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: List.generate(
                           6,
                           (index) => SizedBox(
-                            width: 50,
+                            width: isVerySmallScreen ? 40 : 50,
                             child: TextField(
                               controller: _otpControllers[index],
                               focusNode: _focusNodes[index],
@@ -252,10 +266,14 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                               decoration: InputDecoration(
                                 counterText: '',
                                 border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(AppConstants.borderRadiusMedium),
+                                  borderRadius: BorderRadius.circular(
+                                    AppConstants.borderRadiusMedium,
+                                  ),
                                 ),
                                 focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(AppConstants.borderRadiusMedium),
+                                  borderRadius: BorderRadius.circular(
+                                    AppConstants.borderRadiusMedium,
+                                  ),
                                   borderSide: const BorderSide(
                                     color: AppConstants.primaryColor,
                                     width: 2,
@@ -267,31 +285,39 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                           ),
                         ),
                       ),
-                      
-                      const SizedBox(height: AppConstants.marginLarge),
-                      
+
+                      SizedBox(height: adaptiveSpacing),
+
                       // Verify Button
                       CustomButton(
                         text: 'Verify OTP',
                         onPressed: _isLoading ? null : _verifyOtp,
                         isLoading: _isLoading,
                       ),
-                      
-                      const SizedBox(height: AppConstants.marginMedium),
-                      
+
+                      SizedBox(height: AppConstants.marginMedium),
+
                       // Resend OTP
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
                             'Didn\'t receive the code? ',
-                            style: AppConstants.captionStyle,
+                            style: AppConstants.captionStyle.copyWith(
+                              fontSize: ResponsiveUtils.getAdaptiveCaptionSize(
+                                context,
+                              ),
+                            ),
                           ),
                           if (_resendCountdown > 0)
                             Text(
                               'Resend in $_resendCountdown seconds',
                               style: AppConstants.captionStyle.copyWith(
                                 color: AppConstants.primaryColor,
+                                fontSize:
+                                    ResponsiveUtils.getAdaptiveCaptionSize(
+                                      context,
+                                    ),
                               ),
                             )
                           else
@@ -310,6 +336,10 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                                       style: AppConstants.captionStyle.copyWith(
                                         color: AppConstants.primaryColor,
                                         fontWeight: FontWeight.w600,
+                                        fontSize:
+                                            ResponsiveUtils.getAdaptiveCaptionSize(
+                                              context,
+                                            ),
                                       ),
                                     ),
                             ),
@@ -318,8 +348,8 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                     ],
                   ),
                 ),
-                
-                const Spacer(),
+
+                SizedBox(height: adaptiveSpacing),
               ],
             ),
           ),
@@ -338,4 +368,4 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
     }
     super.dispose();
   }
-} 
+}

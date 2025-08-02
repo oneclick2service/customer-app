@@ -441,7 +441,7 @@ class _BookingHistoryScreenState extends State<BookingHistoryScreen> {
       ),
       child: CustomTextField(
         hintText: 'Search bookings...',
-        prefixIcon: Icons.search,
+        prefixIcon: const Icon(Icons.search),
         onChanged: (value) {
           setState(() {
             _searchQuery = value;
@@ -558,7 +558,7 @@ class _BookingHistoryScreenState extends State<BookingHistoryScreen> {
                   ),
                 ),
                 Text(
-                  '₹${booking.totalAmount.toStringAsFixed(2)}',
+                  '₹${booking.amount.toStringAsFixed(2)}',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: AppConstants.primaryColor,
@@ -576,7 +576,7 @@ class _BookingHistoryScreenState extends State<BookingHistoryScreen> {
               children: [
                 // Service description
                 Text(
-                  booking.serviceDescription,
+                  booking.description,
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
                 const SizedBox(height: 8),
@@ -588,8 +588,8 @@ class _BookingHistoryScreenState extends State<BookingHistoryScreen> {
                       radius: 16,
                       backgroundColor: AppConstants.primaryColor,
                       child: Text(
-                        booking.providerName.isNotEmpty
-                            ? booking.providerName[0].toUpperCase()
+                        booking.serviceProviderId != null
+                            ? booking.serviceProviderId![0].toUpperCase()
                             : 'P',
                         style: const TextStyle(
                           color: Colors.white,
@@ -603,13 +603,13 @@ class _BookingHistoryScreenState extends State<BookingHistoryScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            booking.providerName.isNotEmpty
-                                ? booking.providerName
+                            booking.serviceProviderId != null
+                                ? 'Provider ID: ${booking.serviceProviderId}'
                                 : 'Provider not assigned',
                             style: Theme.of(context).textTheme.bodyMedium
                                 ?.copyWith(fontWeight: FontWeight.w600),
                           ),
-                          if (booking.providerRating != null)
+                          if (booking.rating != null)
                             Row(
                               children: [
                                 Icon(
@@ -619,7 +619,7 @@ class _BookingHistoryScreenState extends State<BookingHistoryScreen> {
                                 ),
                                 const SizedBox(width: 4),
                                 Text(
-                                  booking.providerRating!.toStringAsFixed(1),
+                                  booking.rating!.toStringAsFixed(1),
                                   style: Theme.of(context).textTheme.bodySmall,
                                 ),
                               ],

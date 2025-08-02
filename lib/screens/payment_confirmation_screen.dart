@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../constants/app_constants.dart';
 import '../services/payment_service.dart';
+import '../models/payment_model.dart';
 import '../models/booking_model.dart';
 import '../widgets/custom_button.dart';
 
@@ -42,11 +44,22 @@ class _PaymentConfirmationScreenState extends State<PaymentConfirmationScreen> {
       });
 
       final receipt = await PaymentService().generateReceipt(
-        widget.paymentResult.transactionId!,
+        PaymentRecord(
+          id: widget.paymentResult.paymentId ?? '',
+          bookingId: widget.booking.id,
+          userId: widget.booking.customerId,
+          amount: widget.paymentResult.amount,
+          currency: widget.paymentResult.currency,
+          paymentMethod: widget.paymentResult.paymentMethod,
+          status: widget.paymentResult.success ? 'completed' : 'failed',
+          transactionId: widget.paymentResult.transactionId,
+          createdAt: widget.paymentResult.timestamp,
+          updatedAt: widget.paymentResult.timestamp,
+        ),
       );
 
       setState(() {
-        _receiptData = receipt;
+        _receiptData = {'receipt': receipt};
         _isGeneratingReceipt = false;
       });
     } catch (e) {
@@ -112,7 +125,7 @@ Date: ${_formatDateTime(booking.scheduledDate)}
 PAYMENT DETAILS
 ---------------
 Amount: ₹${widget.amount.toStringAsFixed(2)}
-Payment Method: ${widget.paymentResult.metadata['payment_method']?.toString().toUpperCase() ?? 'N/A'}
+Payment Method: ${widget.paymentResult.metadata?['payment_method']?.toString().toUpperCase() ?? 'N/A'}
 Transaction ID: ${widget.paymentResult.transactionId}
 Status: ${widget.paymentResult.success ? 'SUCCESS' : 'FAILED'}
 
@@ -230,16 +243,16 @@ For support, contact: support@oneclick2service.com
                     ),
                     _buildDetailRow(
                       'Payment Method',
-                      widget.paymentResult.metadata['payment_method']
+                      widget.paymentResult.metadata?['payment_method']
                               ?.toString()
                               .toUpperCase() ??
                           'N/A',
                     ),
                     _buildDetailRow('Date', _formatDateTime(DateTime.now())),
-                    if (widget.paymentResult.metadata['upi_app'] != null)
+                    if (widget.paymentResult.metadata?['upi_app'] != null)
                       _buildDetailRow(
                         'UPI App',
-                        widget.paymentResult.metadata['upi_app'].toString(),
+                        widget.paymentResult.metadata!['upi_app'].toString(),
                       ),
                   ],
                 ),
