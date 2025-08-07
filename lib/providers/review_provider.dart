@@ -185,9 +185,9 @@ class ReviewProvider with ChangeNotifier {
   }
 
   // Report a review
-  Future<bool> reportReview(String reviewId) async {
+  Future<bool> reportReview(String reviewId, String reason) async {
     try {
-      final success = await _reviewService.reportReview(reviewId);
+      final success = await _reviewService.reportReview(reviewId, reason);
 
       if (success) {
         // Update the review's reported status in the list
@@ -269,7 +269,7 @@ class ReviewProvider with ChangeNotifier {
       _error = null;
       notifyListeners();
 
-      final reviews = await _reviewService.getUserReviews(userId);
+      final reviews = await _reviewService.getUserReviews(userId: userId);
       _reviews = reviews;
       _isLoading = false;
       notifyListeners();
